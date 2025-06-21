@@ -66,9 +66,31 @@ class _BookListPageState extends State<BookListPage> {
   @override
   Widget build(BuildContext context) {
     final favoritesProvider = Provider.of<FavoritesProvider>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Buku Populer')),
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
+      appBar: AppBar(
+        title: const Text(
+          'Buku Populer',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF3A7BD5), Color(0xFF00D2FF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(12),
+            ),
+          ),
+        ),
+      ),
       body: FutureBuilder<List<Book>>(
         future: futureBooks,
         builder: (context, snapshot) {
@@ -81,8 +103,10 @@ class _BookListPageState extends State<BookListPage> {
           }
 
           final books = snapshot.data!;
-          return ListView.builder(
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
             itemCount: books.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final book = books[index];
               final isFavorite = favoritesProvider.isFavorite(book);
@@ -103,14 +127,28 @@ class _BookListPageState extends State<BookListPage> {
                   Positioned(
                     top: 10,
                     right: 10,
-                    child: IconButton(
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.grey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
-                      onPressed: () {
-                        favoritesProvider.toggleFavorite(book);
-                      },
+                      child: IconButton(
+                        icon: Icon(
+                          isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.grey,
+                        ),
+                        onPressed: () {
+                          favoritesProvider.toggleFavorite(book);
+                        },
+                      ),
                     ),
                   ),
                 ],

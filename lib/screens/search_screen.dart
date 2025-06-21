@@ -37,22 +37,32 @@ class _SearchScreenState extends State<SearchScreen> {
         title: const Text('Cari Buku'),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF3A7BD5), Color(0xFF00D2FF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Input Search
+            // Search box
             Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.blueAccent.withOpacity(0.3)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.15),
-                    blurRadius: 8,
+                    color: Colors.blueAccent.withOpacity(0.1),
+                    blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
@@ -60,19 +70,12 @@ class _SearchScreenState extends State<SearchScreen> {
               child: TextField(
                 controller: _controller,
                 decoration: InputDecoration(
-                  hintText: 'Masukkan judul atau penulis...',
-                  hintStyle: const TextStyle(fontSize: 16, color: Colors.grey),
+                  hintText: 'Cari judul atau penulis...',
+                  hintStyle: TextStyle(color: Colors.grey[500]),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 15,
-                  ), // Hapus horizontal
-                  isCollapsed: true, // Menghindari padding ganda
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.only(right: 16),
-                    child: IconButton(
-                      icon: const Icon(Icons.search),
-                      onPressed: _searchBooks,
-                    ),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search, color: Colors.blueAccent),
+                    onPressed: _searchBooks,
                   ),
                 ),
                 onSubmitted: (_) => _searchBooks(),
@@ -80,50 +83,49 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Hasil pencarian
+            // Search Results
             Expanded(
-              child:
-                  _isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _results.isEmpty
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _results.isEmpty
                       ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.search_off,
-                              size: 80,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              "Belum ada hasil",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      : ListView.separated(
-                        itemCount: _results.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
-                        itemBuilder: (context, index) {
-                          final book = _results[index];
-                          return BookCard(
-                            book: book,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => DetailScreen(book: book),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.search_off,
+                                  size: 80, color: Colors.grey[400]),
+                              const SizedBox(height: 10),
+                              Text(
+                                "Belum ada hasil",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              );
-                            },
-                          );
-                        },
-                      ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.separated(
+                          itemCount: _results.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            final book = _results[index];
+                            return BookCard(
+                              book: book,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        DetailScreen(book: book),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
             ),
           ],
         ),
